@@ -1,0 +1,1138 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>REWORK — Grupa Kibicowska</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@400;500;600;700;800&family=Oswald:wght@500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --red:#A6182B;
+    --red-dark:#5E0C18;
+    --red-glow:#E23B4C;
+    --black:#0B0A0A;
+    --black-2:#151313;
+    --white:#F4EFE4;
+    --gold:#B7924F;
+    --gray:#8C8578;
+    --line: rgba(244,239,228,0.12);
+    --radius: 2px;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  html{scroll-behavior:smooth;}
+  body{
+    background:var(--black);
+    color:var(--white);
+    font-family:'Inter', sans-serif;
+    overflow-x:hidden;
+  }
+  ::selection{ background:var(--red); color:var(--white); }
+  ::-webkit-scrollbar{ width:8px; }
+  ::-webkit-scrollbar-track{ background:var(--black); }
+  ::-webkit-scrollbar-thumb{ background:var(--red-dark); }
+
+  h1,h2,h3,.display{
+    font-family:'Bebas Neue', sans-serif;
+    letter-spacing:0.03em;
+    line-height:0.95;
+  }
+  .eyebrow{
+    font-family:'Oswald', sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.35em;
+    font-size:12px;
+    color:var(--gold);
+  }
+
+  /* ============ LOADER ============ */
+  #loader{
+    position:fixed; inset:0; z-index:9999;
+    background:radial-gradient(ellipse at center, #1a0508 0%, var(--black) 70%);
+    display:flex; align-items:center; justify-content:center;
+    flex-direction:column;
+    transition:opacity .9s ease, visibility .9s ease;
+  }
+  #loader.hide{ opacity:0; visibility:hidden; pointer-events:none; }
+  .rays{
+    position:absolute; inset:0; margin:auto; width:1400px; height:1400px;
+    background:conic-gradient(from 0deg, transparent 0deg, rgba(244,239,228,0.05) 2deg, transparent 6deg, transparent 40deg, rgba(244,239,228,0.05) 42deg, transparent 46deg, transparent 90deg, rgba(244,239,228,0.04) 92deg, transparent 96deg, transparent 140deg, rgba(244,239,228,0.05) 142deg, transparent 146deg, transparent 190deg, rgba(244,239,228,0.04) 192deg, transparent 196deg, transparent 260deg, rgba(244,239,228,0.05) 262deg, transparent 266deg, transparent 320deg, rgba(244,239,228,0.04) 322deg, transparent 326deg);
+    opacity:0; animation: raysIn 2.4s ease-out .3s forwards, spin 40s linear infinite;
+    filter:blur(1px);
+  }
+  @keyframes raysIn{ to{ opacity:1; } }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .loader-star-wrap{ position:relative; z-index:2; display:flex; flex-direction:column; align-items:center; gap:22px; }
+  .loader-star{ width:120px; height:120px; filter:drop-shadow(0 0 0px var(--red-glow)); }
+  .loader-star path{
+    fill:none; stroke:var(--white); stroke-width:1.2;
+    stroke-dasharray:340; stroke-dashoffset:340;
+    animation: drawStar 1.4s ease forwards, fillStar 0.6s ease 1.3s forwards, glowPulse 1.8s ease 1.9s infinite;
+  }
+  @keyframes drawStar{ to{ stroke-dashoffset:0; } }
+  @keyframes fillStar{ to{ fill:var(--white); } }
+  @keyframes glowPulse{
+    0%,100%{ filter:drop-shadow(0 0 6px var(--red-glow)); }
+    50%{ filter:drop-shadow(0 0 22px var(--red-glow)); }
+  }
+
+  .flip-row{ display:flex; gap:6px; opacity:0; animation: rowIn .5s ease 1.6s forwards; }
+  .flip-digit{
+    width:44px; height:64px; background:var(--black-2); border:1px solid var(--line);
+    display:flex; align-items:center; justify-content:center;
+    font-family:'Bebas Neue'; font-size:38px; color:var(--white);
+    transform-style:preserve-3d; transform:rotateX(90deg); opacity:0;
+    animation: flipIn .5s ease forwards;
+  }
+  .flip-digit:nth-child(1){ animation-delay:1.65s; }
+  .flip-digit:nth-child(2){ animation-delay:1.75s; }
+  .flip-digit:nth-child(3){ animation-delay:1.85s; }
+  .flip-digit:nth-child(4){ animation-delay:1.95s; }
+  @keyframes flipIn{ to{ transform:rotateX(0deg); opacity:1; } }
+  @keyframes rowIn{ to{ opacity:1; } }
+  .loader-tag{ opacity:0; animation:rowIn .6s ease 2.3s forwards; font-family:'Oswald'; letter-spacing:.4em; font-size:11px; color:var(--gray); text-transform:uppercase; }
+
+  /* ============ NAV ============ */
+  header{
+    position:fixed; top:0; left:0; right:0; z-index:500;
+    display:flex; align-items:center; justify-content:space-between;
+    padding:18px 5%; transition:background .4s ease, padding .4s ease, border-color .4s ease;
+    border-bottom:1px solid transparent;
+  }
+  header.solid{ background:rgba(11,10,10,0.92); backdrop-filter:blur(10px); padding:12px 5%; border-color:var(--line); }
+  .brand{ display:flex; align-items:center; gap:12px; cursor:pointer; }
+  .brand svg{ width:34px; height:34px; }
+  .brand-text{ font-family:'Bebas Neue'; font-size:24px; letter-spacing:.08em; }
+  .brand-text span{ color:var(--red-glow); }
+  nav ul{ list-style:none; display:flex; gap:34px; }
+  nav a{
+    color:var(--white); text-decoration:none; font-family:'Oswald'; font-size:13px;
+    text-transform:uppercase; letter-spacing:.12em; position:relative; opacity:.85;
+    transition:opacity .2s;
+  }
+  nav a:hover{ opacity:1; }
+  nav a::after{
+    content:''; position:absolute; left:0; bottom:-6px; width:0; height:2px; background:var(--red-glow);
+    transition:width .25s ease;
+  }
+  nav a:hover::after{ width:100%; }
+  .nav-actions{ display:flex; gap:10px; align-items:center; }
+  .icon-btn{
+    width:38px; height:38px; border:1px solid var(--line); display:flex; align-items:center; justify-content:center;
+    color:var(--gray); background:transparent; cursor:pointer; transition:all .2s;
+  }
+  .icon-btn:hover{ color:var(--white); border-color:var(--red-glow); }
+  .burger{ display:none; }
+
+  /* ============ BUTTONS ============ */
+  .btn{
+    display:inline-flex; align-items:center; gap:10px; padding:14px 28px;
+    font-family:'Oswald'; font-size:13px; text-transform:uppercase; letter-spacing:.15em;
+    border:1px solid var(--white); color:var(--white); text-decoration:none; cursor:pointer;
+    background:transparent; transition:all .25s ease; position:relative; overflow:hidden;
+  }
+  .btn-primary{ background:var(--red); border-color:var(--red); }
+  .btn-primary:hover{ background:var(--red-glow); border-color:var(--red-glow); box-shadow:0 0 24px rgba(226,59,76,.5); }
+  .btn-ghost:hover{ background:var(--white); color:var(--black); }
+  .btn-sm{ padding:9px 16px; font-size:11px; }
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;
+    text-align:center; overflow:hidden; padding:120px 20px 60px;
+    background:
+      radial-gradient(ellipse 120% 60% at 50% 0%, rgba(166,24,43,.35), transparent 60%),
+      linear-gradient(180deg, var(--black) 0%, #150808 60%, var(--black) 100%);
+  }
+  .hero-rays{ position:absolute; top:-200px; left:50%; transform:translateX(-50%); width:1600px; height:1600px; opacity:.5;
+    background:conic-gradient(from 0deg, transparent 0deg, rgba(244,239,228,.06) 3deg, transparent 8deg, transparent 60deg, rgba(244,239,228,.05) 63deg, transparent 68deg, transparent 130deg, rgba(244,239,228,.06) 133deg, transparent 138deg, transparent 220deg, rgba(244,239,228,.05) 223deg, transparent 228deg, transparent 300deg, rgba(244,239,228,.06) 303deg, transparent 308deg);
+    animation:spin 60s linear infinite;
+  }
+  .hero-content{ position:relative; z-index:2; max-width:900px; }
+  .hero .eyebrow{ opacity:0; animation:fadeUp .8s ease .2s forwards; }
+  .hero h1{
+    font-size:clamp(64px, 13vw, 160px); color:var(--white); opacity:0; animation:fadeUp .9s ease .35s forwards;
+    text-shadow:0 0 60px rgba(226,59,76,.25);
+  }
+  .hero h1 em{ font-style:normal; color:var(--red-glow); }
+  .hero p{ font-size:17px; color:var(--gray); max-width:520px; margin:18px auto 40px; opacity:0; animation:fadeUp .9s ease .5s forwards; }
+  .hero-btns{ display:flex; gap:16px; justify-content:center; flex-wrap:wrap; opacity:0; animation:fadeUp .9s ease .65s forwards; }
+  @keyframes fadeUp{ from{ opacity:0; transform:translateY(24px);} to{ opacity:1; transform:translateY(0);} }
+
+  .stat-strip{
+    position:relative; z-index:2; display:flex; gap:60px; margin-top:70px; flex-wrap:wrap; justify-content:center;
+    opacity:0; animation:fadeUp .9s ease .8s forwards;
+  }
+  .stat{ text-align:center; }
+  .stat .num{ font-family:'Bebas Neue'; font-size:52px; color:var(--white); }
+  .stat .lbl{ font-family:'Oswald'; font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--gray); margin-top:4px; }
+
+  /* ============ TICKER ============ */
+  .ticker-bar{ background:var(--red); border-top:1px solid var(--red-dark); border-bottom:1px solid var(--red-dark); overflow:hidden; padding:10px 0; position:relative; z-index:3;}
+  .ticker-track{ display:flex; white-space:nowrap; animation:tickerMove 28s linear infinite; }
+  @keyframes tickerMove{ from{ transform:translateX(0);} to{ transform:translateX(-50%);} }
+  .ticker-track span{ font-family:'Oswald'; font-size:13px; letter-spacing:.1em; text-transform:uppercase; padding:0 40px; color:var(--white); }
+  .ticker-track span::before{ content:'★'; margin-right:12px; color:var(--white); }
+
+  /* ============ SECTIONS ============ */
+  section{ padding:110px 6% 90px; position:relative; }
+  .sec-head{ display:flex; align-items:flex-end; justify-content:space-between; margin-bottom:56px; flex-wrap:wrap; gap:20px; }
+  .sec-head h2{ font-size:clamp(40px,6vw,72px); }
+  .sec-head .eyebrow{ display:block; margin-bottom:10px; }
+  .reveal{ opacity:0; transform:translateY(30px); transition:opacity .7s ease, transform .7s ease; }
+  .reveal.in{ opacity:1; transform:translateY(0); }
+
+  /* NEWS */
+  .news-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(300px,1fr)); gap:26px; }
+  .card{
+    background:var(--black-2); border:1px solid var(--line); overflow:hidden; transition:transform .3s ease, border-color .3s ease;
+    display:flex; flex-direction:column;
+  }
+  .card:hover{ transform:translateY(-6px); border-color:var(--red); }
+  .card-img{ height:190px; width:100%; object-fit:cover; background:linear-gradient(135deg,#2a1015,#100708); }
+  .card-body{ padding:22px; display:flex; flex-direction:column; gap:10px; flex:1; }
+  .card-meta{ font-family:'Oswald'; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); display:flex; justify-content:space-between; }
+  .card h3{ font-family:'Inter'; font-size:19px; font-weight:700; letter-spacing:0; line-height:1.3; }
+  .card p{ font-size:14px; color:var(--gray); line-height:1.6; flex:1; }
+  .card-foot{ font-size:12px; color:var(--gray); border-top:1px solid var(--line); padding-top:12px; display:flex; justify-content:space-between; }
+
+  /* EVENTS */
+  .events-list{ display:flex; flex-direction:column; gap:2px; }
+  .event-row{
+    display:grid; grid-template-columns:110px 1fr auto auto; gap:24px; align-items:center;
+    padding:26px 24px; border:1px solid var(--line); background:var(--black-2);
+    transition:background .25s ease;
+  }
+  .event-row:hover{ background:#1c1414; }
+  .event-date{ text-align:center; border-right:1px solid var(--line); padding-right:20px; }
+  .event-date .d{ font-family:'Bebas Neue'; font-size:38px; color:var(--white); }
+  .event-date .m{ font-family:'Oswald'; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gray); }
+  .event-info h3{ font-family:'Inter'; font-weight:700; font-size:19px; letter-spacing:0; margin-bottom:6px; }
+  .event-info .meta{ font-size:13px; color:var(--gray); display:flex; gap:16px; flex-wrap:wrap; }
+  .badge{ font-family:'Oswald'; font-size:11px; letter-spacing:.1em; text-transform:uppercase; padding:6px 14px; border:1px solid; white-space:nowrap; }
+  .badge.open{ color:#7CD98A; border-color:#7CD98A; }
+  .badge.closed{ color:#D97C7C; border-color:#D97C7C; }
+
+  /* LEADERS */
+  .leader-group{ margin-bottom:50px; }
+  .leader-group-head{ display:flex; align-items:baseline; gap:14px; margin-bottom:22px; }
+  .leader-group-head h4{ font-family:'Bebas Neue'; font-size:26px; letter-spacing:.04em; color:var(--white); }
+  .leader-group-head span{ font-family:'Oswald'; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--gray); }
+  .leader-group-head::after{ content:''; flex:1; height:1px; background:var(--line); }
+  .leaders-grid{ display:grid; grid-template-columns:repeat(auto-fill, minmax(220px,1fr)); gap:26px; }
+  .leader-card{ text-align:center; padding:34px 20px; border:1px solid var(--line); background:var(--black-2); position:relative; }
+  .leader-photo{ width:88px; height:88px; border-radius:50%; margin:0 auto 18px; border:2px solid var(--red); display:flex; align-items:center; justify-content:center; font-family:'Bebas Neue'; font-size:30px; background:#1c1414; }
+  .leader-card h3{ font-family:'Inter'; font-weight:700; font-size:17px; letter-spacing:0; }
+  .leader-card .role{ font-family:'Oswald'; font-size:11px; letter-spacing:.15em; text-transform:uppercase; color:var(--gold); margin-top:6px; }
+  .leader-card .tags{ margin-top:14px; display:flex; flex-direction:column; gap:6px; }
+  .leader-card .tag{ font-size:12px; color:var(--gray); display:flex; align-items:center; justify-content:center; gap:6px; }
+  .leader-card .tag b{ color:var(--white); font-weight:600; }
+
+  /* RECRUITMENT */
+  .recruit{ background:linear-gradient(135deg, var(--red-dark), #200a0d); border:1px solid var(--red); padding:70px 6%; text-align:center; }
+  .recruit h2{ font-size:clamp(38px,6vw,64px); margin-bottom:16px; }
+  .recruit p{ color:#ecd9d9; max-width:560px; margin:0 auto 34px; }
+
+  /* GALLERY */
+  .gallery-grid{ columns:4 240px; column-gap:14px; }
+  .gallery-grid img{ width:100%; margin-bottom:14px; display:block; cursor:pointer; transition:filter .3s ease; border:1px solid var(--line); }
+  .gallery-grid img:hover{ filter:brightness(1.15); }
+  .lightbox{ position:fixed; inset:0; background:rgba(0,0,0,.92); display:none; align-items:center; justify-content:center; z-index:800; padding:40px; }
+  .lightbox.show{ display:flex; }
+  .lightbox img{ max-width:90%; max-height:85%; border:1px solid var(--line); }
+  .lightbox-close{ position:absolute; top:24px; right:34px; font-size:32px; color:var(--white); cursor:pointer; background:none; border:none; }
+
+  /* FOOTER */
+  footer{ padding:60px 6% 30px; border-top:1px solid var(--line); text-align:center; }
+  .footer-brand{ display:flex; align-items:center; justify-content:center; gap:12px; margin-bottom:20px; }
+  .footer-links{ display:flex; gap:26px; justify-content:center; margin-bottom:30px; flex-wrap:wrap; }
+  .footer-links a{ color:var(--gray); text-decoration:none; font-family:'Oswald'; font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+  .footer-links a:hover{ color:var(--white); }
+  .disclaimer{ font-size:11px; color:#5c5750; max-width:640px; margin:0 auto; line-height:1.7; }
+
+  /* ADMIN */
+  .admin-fab{
+    position:fixed; bottom:26px; right:26px; z-index:400; width:52px; height:52px; border-radius:50%;
+    background:var(--black-2); border:1px solid var(--line); color:var(--gray); display:flex; align-items:center; justify-content:center;
+    cursor:pointer; transition:all .25s;
+  }
+  .admin-fab:hover{ color:var(--white); border-color:var(--red-glow); transform:rotate(90deg); }
+  .modal-overlay{ position:fixed; inset:0; background:rgba(0,0,0,.75); backdrop-filter:blur(4px); z-index:900; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal-overlay.show{ display:flex; }
+  .modal{ background:var(--black-2); border:1px solid var(--line); width:100%; max-width:460px; padding:40px; position:relative; }
+  .modal h3{ font-family:'Bebas Neue'; font-size:30px; margin-bottom:6px; }
+  .modal .sub{ font-size:13px; color:var(--gray); margin-bottom:24px; }
+  .field{ margin-bottom:16px; }
+  .field label{ display:block; font-family:'Oswald'; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--gold); margin-bottom:7px; }
+  .field input, .field textarea, .field select{
+    width:100%; padding:12px 14px; background:var(--black); border:1px solid var(--line); color:var(--white); font-family:'Inter'; font-size:14px;
+  }
+  .field textarea{ resize:vertical; min-height:80px; }
+  .modal-close{ position:absolute; top:16px; right:18px; background:none; border:none; color:var(--gray); font-size:22px; cursor:pointer; }
+  .err-msg{ color:#e26666; font-size:12px; margin-top:8px; min-height:14px; }
+
+  .admin-panel{ position:fixed; inset:0; background:var(--black); z-index:950; display:none; overflow-y:auto; }
+  .admin-panel.show{ display:block; }
+  .admin-topbar{ position:sticky; top:0; background:var(--black-2); border-bottom:1px solid var(--line); display:flex; justify-content:space-between; align-items:center; padding:18px 5%; z-index:5; }
+  .admin-tabs{ display:flex; gap:6px; padding:20px 5% 0; flex-wrap:wrap; }
+  .tab-btn{ padding:10px 20px; font-family:'Oswald'; font-size:12px; letter-spacing:.1em; text-transform:uppercase; background:var(--black-2); border:1px solid var(--line); color:var(--gray); cursor:pointer; }
+  .tab-btn.active{ background:var(--red); color:var(--white); border-color:var(--red); }
+  .admin-body{ padding:30px 5% 80px; }
+  .admin-section{ display:none; }
+  .admin-section.active{ display:block; }
+  .admin-list-item{ display:flex; justify-content:space-between; align-items:center; padding:16px 20px; border:1px solid var(--line); background:var(--black-2); margin-bottom:10px; gap:16px; flex-wrap:wrap; }
+  .admin-list-item .title{ font-weight:600; }
+  .admin-list-item .actions{ display:flex; gap:8px; }
+  .mini-btn{ padding:7px 14px; font-size:11px; font-family:'Oswald'; letter-spacing:.08em; text-transform:uppercase; border:1px solid var(--line); background:transparent; color:var(--gray); cursor:pointer; }
+  .mini-btn.danger:hover{ border-color:#e26666; color:#e26666; }
+  .mini-btn.edit:hover{ border-color:var(--gold); color:var(--gold); }
+  .form-box{ background:var(--black-2); border:1px solid var(--line); padding:26px; margin-bottom:30px; }
+  .form-row2{ display:grid; grid-template-columns:1fr 1fr; gap:16px; }
+  .toast{ position:fixed; bottom:26px; left:50%; transform:translateX(-50%) translateY(20px); background:var(--red); color:var(--white); padding:14px 26px; font-family:'Oswald'; font-size:13px; letter-spacing:.08em; text-transform:uppercase; z-index:1000; opacity:0; transition:all .3s ease; pointer-events:none; }
+  .toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
+  .empty-note{ color:var(--gray); font-size:13px; padding:20px; text-align:center; border:1px dashed var(--line); }
+
+  @media(max-width:860px){
+    nav, .nav-actions .btn-ghost{ display:none; }
+    .burger{ display:flex; }
+    .form-row2{ grid-template-columns:1fr; }
+    .event-row{ grid-template-columns:1fr; text-align:left; }
+    .event-date{ border-right:none; border-bottom:1px solid var(--line); padding-bottom:10px; display:flex; gap:10px; align-items:baseline; }
+    .gallery-grid{ columns:2 160px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div id="loader">
+  <div class="rays"></div>
+  <div class="loader-star-wrap">
+    <svg class="loader-star" viewBox="0 0 100 100">
+      <path d="M50 4 L61 38 L97 38 L68 59 L79 93 L50 72 L21 93 L32 59 L3 38 L39 38 Z"/>
+    </svg>
+    <div class="flip-row">
+      <div class="flip-digit">1</div>
+      <div class="flip-digit">9</div>
+      <div class="flip-digit">0</div>
+      <div class="flip-digit">6</div>
+    </div>
+    <div class="loader-tag">REWORK · Grupa Kibicowska</div>
+  </div>
+</div>
+
+<!-- NAV -->
+<header id="mainHeader">
+  <div class="brand" onclick="scrollToId('top')">
+    <svg viewBox="0 0 100 100" width="34" height="34"><path d="M50 4 L61 38 L97 38 L68 59 L79 93 L50 72 L21 93 L32 59 L3 38 L39 38 Z" fill="#F4EFE4"/></svg>
+    <div class="brand-text">REWORK<span>.</span></div>
+  </div>
+  <nav>
+    <ul>
+      <li><a href="#top" onclick="scrollToId('top');return false;">Start</a></li>
+      <li><a href="#news" onclick="scrollToId('news');return false;">Aktualności</a></li>
+      <li><a href="#events" onclick="scrollToId('events');return false;">Wydarzenia</a></li>
+      <li><a href="#leaders" onclick="scrollToId('leaders');return false;">Liderzy</a></li>
+      <li><a href="#recruit" onclick="scrollToId('recruit');return false;">Rekrutacja</a></li>
+      <li><a href="#gallery" onclick="scrollToId('gallery');return false;">Galeria</a></li>
+    </ul>
+  </nav>
+  <div class="nav-actions">
+    <a class="btn btn-ghost btn-sm" href="https://www.roblox.com/games/104573256697344/Polish-Fans-REWORK" target="_blank" rel="noopener">Graj w grę</a>
+    <a class="btn btn-ghost btn-sm" id="navDiscordBtn" target="_blank" rel="noopener">Discord</a>
+    <button class="icon-btn burger" onclick="toggleMobileMenu()">☰</button>
+  </div>
+</header>
+
+<!-- HERO -->
+<section id="top" class="hero" style="padding-top:0;min-height:100vh;">
+  <div class="hero-rays"></div>
+  <div class="hero-content">
+    <div class="eyebrow">Od 1906 · Wierni do końca</div>
+    <h1 id="heroTitle">RE<em>WORK</em></h1>
+    <p id="heroSubtitle">Nieoficjalna strona grupy kibicowskiej. Śpiewamy razem, jeździmy razem, wspieramy razem — na dobre i na złe.</p>
+    <div class="hero-btns">
+      <a class="btn btn-primary" id="heroDiscordBtn" target="_blank" rel="noopener">Dołącz do Discorda</a>
+      <a class="btn btn-ghost" href="https://www.roblox.com/games/104573256697344/Polish-Fans-REWORK" target="_blank" rel="noopener">Zagraj na Roblox</a>
+      <a class="btn btn-ghost" href="#recruit" onclick="scrollToId('recruit');return false;">Rekrutacja</a>
+    </div>
+  </div>
+  <div class="stat-strip">
+    <div class="stat"><div class="num" id="memberCount">0</div><div class="lbl">Członków</div></div>
+    <div class="stat"><div class="num">1906</div><div class="lbl">Rok założenia</div></div>
+    <div class="stat"><div class="num">★</div><div class="lbl">Wierni zawsze</div></div>
+  </div>
+</section>
+
+<div class="ticker-bar">
+  <div class="ticker-track" id="tickerTrack"></div>
+</div>
+
+<!-- NEWS -->
+<section id="news">
+  <div class="sec-head reveal">
+    <div>
+      <span class="eyebrow">Co słychać</span>
+      <h2>Aktualności</h2>
+    </div>
+  </div>
+  <div class="news-grid reveal" id="newsGrid"></div>
+</section>
+
+<!-- EVENTS -->
+<section id="events">
+  <div class="sec-head reveal">
+    <div>
+      <span class="eyebrow">Kalendarz</span>
+      <h2>Wydarzenia</h2>
+    </div>
+  </div>
+  <div class="events-list reveal" id="eventsList"></div>
+</section>
+
+<!-- LEADERS -->
+<section id="leaders">
+  <div class="sec-head reveal">
+    <div>
+      <span class="eyebrow">Zarząd grupy</span>
+      <h2>Liderzy</h2>
+    </div>
+  </div>
+  <div class="leaders-grid reveal" id="leadersGrid"></div>
+</section>
+
+<!-- RECRUIT -->
+<section id="recruit" style="padding:90px 6%;">
+  <div class="recruit reveal">
+    <span class="eyebrow" style="color:#f0c9c9;">Dołącz do nas</span>
+    <h2>Rekrutacja</h2>
+    <p>Szukamy ludzi, którym zależy. Nie liczy się staż, liczy się serce do klubu. Aby sprawdzić, czy rekrutacja jest aktualnie otwarta, dołącz do naszego Discorda — tam podajemy bieżący status i zasady zapisów.</p>
+    <a class="btn btn-primary" id="recruitDiscordBtn" target="_blank" rel="noopener">Dołącz na Discord</a>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="sec-head reveal">
+    <div>
+      <span class="eyebrow">Z trybun</span>
+      <h2>Galeria</h2>
+    </div>
+  </div>
+  <div class="gallery-grid reveal" id="galleryGrid"></div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-brand">
+    <svg viewBox="0 0 100 100" width="28" height="28"><path d="M50 4 L61 38 L97 38 L68 59 L79 93 L50 72 L21 93 L32 59 L3 38 L39 38 Z" fill="#F4EFE4"/></svg>
+    <div class="brand-text" style="font-size:20px;">REWORK</div>
+  </div>
+  <div class="footer-links">
+    <a href="#top" onclick="scrollToId('top');return false;">Start</a>
+    <a href="#news" onclick="scrollToId('news');return false;">Aktualności</a>
+    <a href="#events" onclick="scrollToId('events');return false;">Wydarzenia</a>
+    <a href="#leaders" onclick="scrollToId('leaders');return false;">Liderzy</a>
+    <a href="#gallery" onclick="scrollToId('gallery');return false;">Galeria</a>
+    <a href="https://www.roblox.com/games/104573256697344/Polish-Fans-REWORK" target="_blank" rel="noopener">Gra na Roblox</a>
+  </div>
+  <p class="disclaimer">⚠️ Ta strona jest nieoficjalnym projektem fanowskim grupy kibicowskiej i nie jest oficjalnie powiązana z żadnym klubem piłkarskim, w tym z Wisłą Kraków. Wszelkie nazwy i barwy używane są wyłącznie w celach społecznościowych.</p>
+</footer>
+
+<!-- ADMIN FAB -->
+<button class="admin-fab" onclick="openLoginModal()" title="Panel administratora">⚙</button>
+
+<!-- LOGIN MODAL -->
+<div class="modal-overlay" id="loginModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeLoginModal()">×</button>
+    <h3>Panel administratora</h3>
+    <p class="sub">Wpisz hasło, aby zarządzać treścią strony.</p>
+    <div class="field">
+      <label>Hasło</label>
+      <input type="password" id="adminPassInput" placeholder="••••••••" onkeydown="if(event.key==='Enter')tryLogin()">
+    </div>
+    <div class="err-msg" id="loginErr"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;" onclick="tryLogin()">Zaloguj</button>
+  </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" onclick="closeLightbox()">×</button>
+  <img id="lightboxImg" src="" alt="">
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- ================= ADMIN PANEL ================= -->
+<div class="admin-panel" id="adminPanel">
+  <div class="admin-topbar">
+    <div class="brand-text">Panel admina — REWORK</div>
+    <button class="btn btn-ghost btn-sm" onclick="closeAdminPanel()">Wróć na stronę</button>
+  </div>
+  <div class="admin-tabs">
+    <button class="tab-btn active" data-tab="tab-site" onclick="switchTab('tab-site',this)">Strona główna</button>
+    <button class="tab-btn" data-tab="tab-news" onclick="switchTab('tab-news',this)">Aktualności</button>
+    <button class="tab-btn" data-tab="tab-events" onclick="switchTab('tab-events',this)">Wydarzenia</button>
+    <button class="tab-btn" data-tab="tab-leaders" onclick="switchTab('tab-leaders',this)">Liderzy</button>
+    <button class="tab-btn" data-tab="tab-gallery" onclick="switchTab('tab-gallery',this)">Galeria</button>
+    <button class="tab-btn" data-tab="tab-announce" onclick="switchTab('tab-announce',this)">Ogłoszenia</button>
+  </div>
+  <div class="admin-body">
+
+    <!-- SITE -->
+    <div class="admin-section active" id="tab-site">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;">Nagłówek strony głównej</h3>
+        <div class="field"><label>Tytuł (HTML dozwolony, np. &lt;em&gt;)</label><input id="cfgHeroTitle"></div>
+        <div class="field"><label>Podtytuł</label><textarea id="cfgHeroSubtitle"></textarea></div>
+        <div class="form-row2">
+          <div class="field"><label>Liczba członków</label><input id="cfgMemberCount" type="number"></div>
+          <div class="field"><label>Link do Discorda</label><input id="cfgDiscordUrl" placeholder="https://discord.gg/..."></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveSiteConfig()">Zapisz zmiany</button>
+      </div>
+    </div>
+
+    <!-- NEWS -->
+    <div class="admin-section" id="tab-news">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;" id="newsFormTitle">Dodaj wpis</h3>
+        <input type="hidden" id="newsEditId">
+        <div class="field"><label>Tytuł</label><input id="newsTitle"></div>
+        <div class="field"><label>Opis</label><textarea id="newsDesc"></textarea></div>
+        <div class="form-row2">
+          <div class="field"><label>Zdjęcie (URL lub plik)</label>
+            <input id="newsImg" placeholder="https://...">
+            <input type="file" id="newsImgFile" accept="image/*" style="margin-top:8px;font-size:12px;" onchange="handleFileUpload(this,'newsImg')">
+          </div>
+          <div class="field"><label>Data</label><input id="newsDate" type="date"></div>
+        </div>
+        <div class="field"><label>Autor</label><input id="newsAuthor"></div>
+        <button class="btn btn-primary btn-sm" onclick="saveNews()">Zapisz wpis</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetNewsForm()">Wyczyść</button>
+      </div>
+      <div id="newsAdminList"></div>
+    </div>
+
+    <!-- EVENTS -->
+    <div class="admin-section" id="tab-events">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;" id="eventFormTitle">Dodaj wydarzenie</h3>
+        <input type="hidden" id="eventEditId">
+        <div class="field"><label>Nazwa wydarzenia</label><input id="eventName"></div>
+        <div class="form-row2">
+          <div class="field"><label>Data</label><input id="eventDate" type="date"></div>
+          <div class="field"><label>Godzina</label><input id="eventTime" type="time"></div>
+        </div>
+        <div class="field"><label>Miejsce</label><input id="eventPlace"></div>
+        <div class="field"><label>Opis</label><textarea id="eventDesc"></textarea></div>
+        <div class="form-row2">
+          <div class="field"><label>Zdjęcie (URL lub plik)</label>
+            <input id="eventImg" placeholder="https://...">
+            <input type="file" id="eventImgFile" accept="image/*" style="margin-top:8px;font-size:12px;" onchange="handleFileUpload(this,'eventImg')">
+          </div>
+          <div class="field"><label>Status</label>
+            <select id="eventStatus"><option value="open">Rekrutacja otwarta</option><option value="closed">Zamknięta</option></select>
+          </div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveEvent()">Zapisz wydarzenie</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetEventForm()">Wyczyść</button>
+      </div>
+      <div id="eventsAdminList"></div>
+    </div>
+
+    <!-- LEADERS -->
+    <div class="admin-section" id="tab-leaders">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;" id="leaderFormTitle">Dodaj lidera</h3>
+        <input type="hidden" id="leaderEditId">
+        <div class="form-row2">
+          <div class="field"><label>Nick (Roblox)</label><input id="leaderName" placeholder="np. kuba987632"></div>
+          <div class="field"><label>Grupa / ranga</label>
+            <select id="leaderGroup">
+              <option value="Founder">Official Group Founder</option>
+              <option value="Co-Founder">Official Group Co-Founder</option>
+              <option value="Management">Official Group Management</option>
+              <option value="Capo">Capo</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row2">
+          <div class="field"><label>Discord</label><input id="leaderDiscord" placeholder="np. @pan_TymbarkV2"></div>
+          <div class="field"><label>Funkcja (opis, opcjonalnie)</label><input id="leaderRole" placeholder="np. Założyciel"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="saveLeader()">Zapisz</button>
+        <button class="btn btn-ghost btn-sm" onclick="resetLeaderForm()">Wyczyść</button>
+      </div>
+      <div id="leadersAdminList"></div>
+    </div>
+
+    <!-- GALLERY -->
+    <div class="admin-section" id="tab-gallery">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;">Dodaj zdjęcie</h3>
+        <div class="form-row2">
+          <div class="field"><label>URL zdjęcia</label>
+            <input id="galImg" placeholder="https://...">
+            <input type="file" id="galImgFile" accept="image/*" style="margin-top:8px;font-size:12px;" onchange="handleFileUpload(this,'galImg')">
+          </div>
+          <div class="field"><label>Podpis (opcjonalnie)</label><input id="galCaption"></div>
+        </div>
+        <button class="btn btn-primary btn-sm" onclick="addGalleryImg()">Dodaj do galerii</button>
+      </div>
+      <div id="galleryAdminList"></div>
+    </div>
+
+    <!-- ANNOUNCE -->
+    <div class="admin-section" id="tab-announce">
+      <div class="form-box">
+        <h3 style="font-family:'Inter';font-size:18px;margin-bottom:18px;">Pasek ogłoszeń</h3>
+        <p class="sub" style="margin-bottom:14px;">Wpisz komunikaty rozdzielone znakiem nowej linii — będą przewijać się na pasku na stronie głównej.</p>
+        <div class="field"><textarea id="announceText" style="min-height:140px;"></textarea></div>
+        <button class="btn btn-primary btn-sm" onclick="saveAnnouncements()">Zapisz ogłoszenia</button>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+/* ============================================================
+   STATE + STORAGE HELPERS
+   ============================================================ */
+// Hasło NIE jest przechowywane jawnie w kodzie — trzymany jest tylko jego hash SHA-256,
+// więc podejrzenie źródła strony nie ujawnia hasła w postaci tekstowej.
+// Domyślne hasło to: rework1906  (zmień patrz instrukcja w komentarzu niżej)
+const ADMIN_PASSWORD_HASH = "c5e24939581560d5de4f3d4cd0ca33a56d9f8cc6211f7ea951d4812553d946ee";
+// Aby ustawić NOWE hasło: otwórz konsolę przeglądarki (F12) na tej stronie i wpisz:
+//   await crypto.subtle.digest('SHA-256', new TextEncoder().encode('twoje-nowe-haslo')).then(b=>[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,'0')).join(''))
+// Skopiuj wynik i wklej powyżej jako wartość ADMIN_PASSWORD_HASH.
+let isAdmin = false;
+async function sha256Hex(text){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(text));
+  return [...new Uint8Array(buf)].map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+const DEFAULTS = {
+  site: {
+    heroTitle: "RE<em>WORK</em>",
+    heroSubtitle: "Nieoficjalna strona grupy kibicowskiej. Śpiewamy razem, jeździmy razem, wspieramy razem — na dobre i na złe.",
+    memberCount: 128,
+    discordUrl: "https://discord.gg/QAkM83p8fe"
+  },
+  announce: "WITAJCIE NA STRONIE GRUPY REWORK\nDOŁĄCZ DO DISCORDA I BĄDŹ NA BIEŻĄCO\nREKRUTACJA OTWARTA — NAPISZ DO LIDERÓW",
+  news: [
+    { id:"n1", title:"Wyjazd na najbliższy mecz — zapisy otwarte", desc:"Organizujemy wspólny wyjazd. Szczegóły transportu i zbiórki u liderów na Discordzie.", img:"", date:"2026-07-01", author:"Zarząd" },
+    { id:"n2", title:"Nowe szaliki grupy już dostępne", desc:"Ograniczona pula, zamówienia przez formularz na Discordzie.", img:"", date:"2026-06-20", author:"Redakcja" }
+  ],
+  events: [
+    { id:"e1", name:"Wspólny wyjazd wyjazdowy", date:"2026-08-02", time:"09:00", place:"Parking Główny", desc:"Zbiórka i wspólny przejazd na mecz wyjazdowy.", img:"", status:"open" }
+  ],
+  leaders: [
+    { id:"l1", name:"kuba987632", role:"Founder", discord:"@pan_TymbarkV2", group:"Founder" },
+    { id:"l2", name:"bartas010", role:"Co-Founder", discord:"@SPEEDWAY FANS", group:"Co-Founder" },
+    { id:"l3", name:"Aii_M1ghtreal", role:"Co-Founder", discord:"@SMIN22x", group:"Co-Founder" },
+    { id:"l4", name:"Kacpelek02", role:"Capo", discord:"@! Stelmii", group:"Capo" },
+    { id:"l5", name:"Blazee1939", role:"Capo", discord:"@krakowski wampir", group:"Capo" },
+    { id:"l6", name:"ALOHA66677", role:"Capo", discord:"@Aloha Sharks", group:"Capo" }
+  ],
+  gallery: [
+    { url:"https://images.unsplash.com/photo-1508098682722-e99c43a406b2?w=800&q=80", caption:"Trybuna" },
+    { url:"https://images.unsplash.com/photo-1522778119026-d647f0596c20?w=800&q=80", caption:"Atmosfera meczowa" },
+    { url:"https://images.unsplash.com/photo-1518604666860-9ed391f76460?w=800&q=80", caption:"Oprawa" }
+  ]
+};
+
+async function loadData(key, fallback){
+  try{
+    const res = await window.storage.get(key, true);
+    if(res && res.value) return JSON.parse(res.value);
+    return fallback;
+  }catch(e){ return fallback; }
+}
+async function saveData(key, value){
+  try{ await window.storage.set(key, JSON.stringify(value), true); }
+  catch(e){ console.error("Storage error", e); showToast("Błąd zapisu danych"); }
+}
+function uid(){ return Math.random().toString(36).slice(2,9); }
+
+function handleFileUpload(input, targetFieldId){
+  const file = input.files[0];
+  if(!file) return;
+  if(!file.type.startsWith('image/')){ showToast('Wybierz plik graficzny'); input.value=''; return; }
+  if(file.size > 1500000){
+    showToast('Plik zbyt duży (maks. ok. 1.5 MB) — zmniejsz zdjęcie albo użyj linku URL');
+    input.value = '';
+    return;
+  }
+  const reader = new FileReader();
+  reader.onload = ()=>{
+    document.getElementById(targetFieldId).value = reader.result;
+    showToast('Plik wczytany — teraz kliknij Zapisz');
+  };
+  reader.onerror = ()=>{ showToast('Nie udało się wczytać pliku'); };
+  reader.readAsDataURL(file);
+}
+
+let DATA = { site:{}, announce:"", news:[], events:[], leaders:[], gallery:[] };
+
+async function initData(){
+  DATA.site = await loadData('site-config', DEFAULTS.site);
+  DATA.announce = await loadData('announcements', DEFAULTS.announce);
+  DATA.news = await loadData('news-list', DEFAULTS.news);
+  DATA.events = await loadData('events-list', DEFAULTS.events);
+  DATA.leaders = await loadData('leaders-list', DEFAULTS.leaders);
+  DATA.gallery = await loadData('gallery-list', DEFAULTS.gallery);
+  renderAll();
+}
+
+/* ============================================================
+   RENDER
+   ============================================================ */
+function renderAll(){
+  renderSite();
+  renderTicker();
+  renderNews();
+  renderEvents();
+  renderLeaders();
+  renderGallery();
+}
+
+function renderSite(){
+  document.getElementById('heroTitle').innerHTML = DATA.site.heroTitle || DEFAULTS.site.heroTitle;
+  document.getElementById('heroSubtitle').textContent = DATA.site.heroSubtitle || DEFAULTS.site.heroSubtitle;
+  const url = DATA.site.discordUrl || DEFAULTS.site.discordUrl;
+  ['navDiscordBtn','heroDiscordBtn','recruitDiscordBtn'].forEach(id=>{
+    document.getElementById(id).href = url;
+  });
+  animateCount(DATA.site.memberCount || 0);
+}
+function animateCount(target){
+  const el = document.getElementById('memberCount');
+  let cur = 0; const step = Math.max(1, Math.ceil(target/40));
+  const iv = setInterval(()=>{
+    cur += step;
+    if(cur >= target){ cur = target; clearInterval(iv); }
+    el.textContent = cur;
+  }, 25);
+}
+
+function renderTicker(){
+  const lines = (DATA.announce||"").split("\n").filter(Boolean);
+  const track = document.getElementById('tickerTrack');
+  const html = lines.map(l=>`<span>${escapeHtml(l)}</span>`).join('');
+  track.innerHTML = html + html; // duplicate for seamless loop
+}
+
+function fmtDate(d){
+  if(!d) return {day:'--', month:'---'};
+  const dt = new Date(d+'T00:00:00');
+  const months = ['STY','LUT','MAR','KWI','MAJ','CZE','LIP','SIE','WRZ','PAŹ','LIS','GRU'];
+  return { day: dt.getDate(), month: months[dt.getMonth()] };
+}
+
+function renderNews(){
+  const grid = document.getElementById('newsGrid');
+  if(!DATA.news.length){ grid.innerHTML = '<div class="empty-note">Brak wpisów. Dodaj pierwszy w panelu admina.</div>'; return; }
+  grid.innerHTML = DATA.news.slice().sort((a,b)=> (b.date||'').localeCompare(a.date||'')).map(n=>`
+    <div class="card">
+      ${n.img ? `<img class="card-img" src="${escapeAttr(n.img)}" alt="">` : `<div class="card-img"></div>`}
+      <div class="card-body">
+        <div class="card-meta"><span>${n.date||''}</span></div>
+        <h3>${escapeHtml(n.title)}</h3>
+        <p>${escapeHtml(n.desc)}</p>
+        <div class="card-foot"><span>${escapeHtml(n.author||'Redakcja')}</span></div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function renderEvents(){
+  const list = document.getElementById('eventsList');
+  if(!DATA.events.length){ list.innerHTML = '<div class="empty-note">Brak zaplanowanych wydarzeń.</div>'; return; }
+  list.innerHTML = DATA.events.slice().sort((a,b)=> (a.date||'').localeCompare(b.date||'')).map(e=>{
+    const {day,month} = fmtDate(e.date);
+    return `
+    <div class="event-row">
+      <div class="event-date"><div class="d">${day}</div><div class="m">${month}</div></div>
+      <div class="event-info">
+        <h3>${escapeHtml(e.name)}</h3>
+        <div class="meta">
+          <span>🕒 ${escapeHtml(e.time||'--:--')}</span>
+          <span>📍 ${escapeHtml(e.place||'')}</span>
+        </div>
+        <p style="color:var(--gray);font-size:13px;margin-top:8px;max-width:560px;">${escapeHtml(e.desc||'')}</p>
+      </div>
+      <span class="badge ${e.status==='open'?'open':'closed'}">${e.status==='open'?'Rekrutacja otwarta':'Zamknięta'}</span>
+    </div>`;
+  }).join('');
+}
+
+const LEADER_GROUP_LABELS = {
+  'Founder': ['Official Group Founder', 'max 1 osoba'],
+  'Co-Founder': ['Official Group Co-Founder', 'max 2 osoby'],
+  'Management': ['Official Group Management', 'max 3 osoby'],
+  'Capo': ['Capo', 'max 5 osób']
+};
+function renderLeaders(){
+  const grid = document.getElementById('leadersGrid');
+  if(!DATA.leaders.length){ grid.innerHTML = '<div class="empty-note">Brak liderów do wyświetlenia.</div>'; return; }
+  const order = ['Founder','Co-Founder','Management','Capo'];
+  let html = '';
+  order.forEach(g=>{
+    const members = DATA.leaders.filter(l=> (l.group||'Capo') === g);
+    if(!members.length) return;
+    const [label, cap] = LEADER_GROUP_LABELS[g];
+    html += `<div class="leader-group">
+      <div class="leader-group-head"><h4>${label}</h4><span>${cap}</span></div>
+      <div class="leaders-grid">
+        ${members.map(l=>`
+          <div class="leader-card">
+            <div class="leader-photo">${escapeHtml((l.name||'?').slice(0,1).toUpperCase())}</div>
+            <h3>${escapeHtml(l.name)}</h3>
+            <div class="role">${escapeHtml(l.role||'')}</div>
+            <div class="tags">
+              ${l.discord ? `<div class="tag">Discord: <b>${escapeHtml(l.discord)}</b></div>` : ''}
+              <div class="tag">Roblox: <b>${escapeHtml(l.name)}</b></div>
+            </div>
+          </div>
+        `).join('')}
+      </div>
+    </div>`;
+  });
+  grid.outerHTML = `<div id="leadersGrid">${html}</div>`;
+}
+
+function renderGallery(){
+  const grid = document.getElementById('galleryGrid');
+  if(!DATA.gallery.length){ grid.innerHTML = '<div class="empty-note">Galeria jest pusta.</div>'; return; }
+  grid.innerHTML = DATA.gallery.map(g=>`<img src="${escapeAttr(g.url)}" alt="${escapeAttr(g.caption||'')}" onclick="openLightbox('${escapeAttr(g.url)}')">`).join('');
+}
+
+function escapeHtml(s){ return (s||'').toString().replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function escapeAttr(s){ return escapeHtml(s); }
+
+/* ============================================================
+   NAV / SCROLL
+   ============================================================ */
+function scrollToId(id){ document.getElementById(id).scrollIntoView({behavior:'smooth'}); }
+window.addEventListener('scroll', ()=>{
+  document.getElementById('mainHeader').classList.toggle('solid', window.scrollY > 40);
+});
+function toggleMobileMenu(){
+  const n = document.querySelector('nav');
+  n.style.display = (n.style.display === 'flex') ? 'none' : 'flex';
+  n.style.cssText += 'position:fixed;top:64px;left:0;right:0;background:#0B0A0A;flex-direction:column;padding:20px;border-bottom:1px solid var(--line);';
+  n.querySelector('ul').style.cssText = 'flex-direction:column;gap:18px;';
+}
+
+/* reveal on scroll */
+const io = new IntersectionObserver((entries)=>{
+  entries.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); } });
+}, {threshold:0.15});
+document.querySelectorAll('.reveal').forEach(el=>io.observe(el));
+
+/* lightbox */
+function openLightbox(url){ document.getElementById('lightboxImg').src = url; document.getElementById('lightbox').classList.add('show'); }
+function closeLightbox(){ document.getElementById('lightbox').classList.remove('show'); }
+
+/* toast */
+let toastTimer;
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg; t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(()=> t.classList.remove('show'), 2400);
+}
+
+/* ============================================================
+   LOGIN / ADMIN PANEL
+   ============================================================ */
+function openLoginModal(){
+  if(isAdmin){ openAdminPanel(); return; }
+  document.getElementById('loginModal').classList.add('show');
+  document.getElementById('adminPassInput').value = '';
+  document.getElementById('loginErr').textContent = '';
+  setTimeout(()=>document.getElementById('adminPassInput').focus(), 100);
+}
+function closeLoginModal(){ document.getElementById('loginModal').classList.remove('show'); }
+async function tryLogin(){
+  const val = document.getElementById('adminPassInput').value;
+  const btn = document.querySelector('#loginModal .btn-primary');
+  btn.textContent = 'Sprawdzanie...';
+  const hash = await sha256Hex(val);
+  btn.textContent = 'Zaloguj';
+  if(hash === ADMIN_PASSWORD_HASH){
+    isAdmin = true;
+    closeLoginModal();
+    openAdminPanel();
+  } else {
+    document.getElementById('loginErr').textContent = 'Błędne hasło. Spróbuj ponownie.';
+  }
+}
+function openAdminPanel(){
+  document.getElementById('adminPanel').classList.add('show');
+  fillSiteForm();
+  renderNewsAdmin();
+  renderEventsAdmin();
+  renderLeadersAdmin();
+  renderGalleryAdmin();
+  document.getElementById('announceText').value = DATA.announce;
+}
+function closeAdminPanel(){ document.getElementById('adminPanel').classList.remove('show'); }
+function switchTab(tabId, btn){
+  document.querySelectorAll('.admin-section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById(tabId).classList.add('active');
+  btn.classList.add('active');
+}
+
+/* ---- SITE CONFIG ---- */
+function fillSiteForm(){
+  document.getElementById('cfgHeroTitle').value = DATA.site.heroTitle || '';
+  document.getElementById('cfgHeroSubtitle').value = DATA.site.heroSubtitle || '';
+  document.getElementById('cfgMemberCount').value = DATA.site.memberCount || 0;
+  document.getElementById('cfgDiscordUrl').value = DATA.site.discordUrl || '';
+}
+async function saveSiteConfig(){
+  DATA.site = {
+    heroTitle: document.getElementById('cfgHeroTitle').value,
+    heroSubtitle: document.getElementById('cfgHeroSubtitle').value,
+    memberCount: parseInt(document.getElementById('cfgMemberCount').value)||0,
+    discordUrl: document.getElementById('cfgDiscordUrl').value
+  };
+  await saveData('site-config', DATA.site);
+  renderSite();
+  showToast('Zapisano stronę główną');
+}
+
+/* ---- NEWS ---- */
+function resetNewsForm(){
+  document.getElementById('newsEditId').value='';
+  document.getElementById('newsTitle').value='';
+  document.getElementById('newsDesc').value='';
+  document.getElementById('newsImg').value='';
+  document.getElementById('newsDate').value='';
+  document.getElementById('newsAuthor').value='';
+  document.getElementById('newsFormTitle').textContent = 'Dodaj wpis';
+}
+async function saveNews(){
+  const id = document.getElementById('newsEditId').value;
+  const item = {
+    id: id || uid(),
+    title: document.getElementById('newsTitle').value.trim(),
+    desc: document.getElementById('newsDesc').value.trim(),
+    img: document.getElementById('newsImg').value.trim(),
+    date: document.getElementById('newsDate').value,
+    author: document.getElementById('newsAuthor').value.trim() || 'Redakcja'
+  };
+  if(!item.title){ showToast('Podaj tytuł wpisu'); return; }
+  if(id){ DATA.news = DATA.news.map(n=> n.id===id ? item : n); }
+  else { DATA.news.push(item); }
+  await saveData('news-list', DATA.news);
+  renderNews(); renderNewsAdmin(); resetNewsForm();
+  showToast('Zapisano wpis');
+}
+function editNews(id){
+  const n = DATA.news.find(x=>x.id===id); if(!n) return;
+  document.getElementById('newsEditId').value = n.id;
+  document.getElementById('newsTitle').value = n.title;
+  document.getElementById('newsDesc').value = n.desc;
+  document.getElementById('newsImg').value = n.img;
+  document.getElementById('newsDate').value = n.date;
+  document.getElementById('newsAuthor').value = n.author;
+  document.getElementById('newsFormTitle').textContent = 'Edytuj wpis';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function deleteNews(id){
+  DATA.news = DATA.news.filter(n=>n.id!==id);
+  await saveData('news-list', DATA.news);
+  renderNews(); renderNewsAdmin();
+  showToast('Usunięto wpis');
+}
+function renderNewsAdmin(){
+  const el = document.getElementById('newsAdminList');
+  if(!DATA.news.length){ el.innerHTML = '<div class="empty-note">Brak wpisów.</div>'; return; }
+  el.innerHTML = DATA.news.map(n=>`
+    <div class="admin-list-item">
+      <div><div class="title">${escapeHtml(n.title)}</div><div style="font-size:12px;color:var(--gray);">${n.date||''} · ${escapeHtml(n.author||'')}</div></div>
+      <div class="actions">
+        <button class="mini-btn edit" onclick="editNews('${n.id}')">Edytuj</button>
+        <button class="mini-btn danger" onclick="deleteNews('${n.id}')">Usuń</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---- EVENTS ---- */
+function resetEventForm(){
+  document.getElementById('eventEditId').value='';
+  document.getElementById('eventName').value='';
+  document.getElementById('eventDate').value='';
+  document.getElementById('eventTime').value='';
+  document.getElementById('eventPlace').value='';
+  document.getElementById('eventDesc').value='';
+  document.getElementById('eventImg').value='';
+  document.getElementById('eventStatus').value='open';
+  document.getElementById('eventFormTitle').textContent = 'Dodaj wydarzenie';
+}
+async function saveEvent(){
+  const id = document.getElementById('eventEditId').value;
+  const item = {
+    id: id || uid(),
+    name: document.getElementById('eventName').value.trim(),
+    date: document.getElementById('eventDate').value,
+    time: document.getElementById('eventTime').value,
+    place: document.getElementById('eventPlace').value.trim(),
+    desc: document.getElementById('eventDesc').value.trim(),
+    img: document.getElementById('eventImg').value.trim(),
+    status: document.getElementById('eventStatus').value
+  };
+  if(!item.name){ showToast('Podaj nazwę wydarzenia'); return; }
+  if(id){ DATA.events = DATA.events.map(e=> e.id===id ? item : e); }
+  else { DATA.events.push(item); }
+  await saveData('events-list', DATA.events);
+  renderEvents(); renderEventsAdmin(); resetEventForm();
+  showToast('Zapisano wydarzenie');
+}
+function editEvent(id){
+  const e = DATA.events.find(x=>x.id===id); if(!e) return;
+  document.getElementById('eventEditId').value = e.id;
+  document.getElementById('eventName').value = e.name;
+  document.getElementById('eventDate').value = e.date;
+  document.getElementById('eventTime').value = e.time;
+  document.getElementById('eventPlace').value = e.place;
+  document.getElementById('eventDesc').value = e.desc;
+  document.getElementById('eventImg').value = e.img;
+  document.getElementById('eventStatus').value = e.status;
+  document.getElementById('eventFormTitle').textContent = 'Edytuj wydarzenie';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function deleteEvent(id){
+  DATA.events = DATA.events.filter(e=>e.id!==id);
+  await saveData('events-list', DATA.events);
+  renderEvents(); renderEventsAdmin();
+  showToast('Usunięto wydarzenie');
+}
+function renderEventsAdmin(){
+  const el = document.getElementById('eventsAdminList');
+  if(!DATA.events.length){ el.innerHTML = '<div class="empty-note">Brak wydarzeń.</div>'; return; }
+  el.innerHTML = DATA.events.map(e=>`
+    <div class="admin-list-item">
+      <div><div class="title">${escapeHtml(e.name)}</div><div style="font-size:12px;color:var(--gray);">${e.date||''} ${e.time||''} · ${escapeHtml(e.place||'')} · ${e.status==='open'?'Otwarta':'Zamknięta'}</div></div>
+      <div class="actions">
+        <button class="mini-btn edit" onclick="editEvent('${e.id}')">Edytuj</button>
+        <button class="mini-btn danger" onclick="deleteEvent('${e.id}')">Usuń</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---- LEADERS ---- */
+function resetLeaderForm(){
+  document.getElementById('leaderEditId').value='';
+  document.getElementById('leaderName').value='';
+  document.getElementById('leaderRole').value='';
+  document.getElementById('leaderDiscord').value='';
+  document.getElementById('leaderGroup').value='Founder';
+  document.getElementById('leaderFormTitle').textContent = 'Dodaj lidera';
+}
+async function saveLeader(){
+  const id = document.getElementById('leaderEditId').value;
+  const item = {
+    id: id || uid(),
+    name: document.getElementById('leaderName').value.trim(),
+    role: document.getElementById('leaderRole').value.trim(),
+    discord: document.getElementById('leaderDiscord').value.trim(),
+    group: document.getElementById('leaderGroup').value
+  };
+  if(!item.name){ showToast('Podaj nick Roblox'); return; }
+  if(id){ DATA.leaders = DATA.leaders.map(l=> l.id===id ? item : l); }
+  else { DATA.leaders.push(item); }
+  await saveData('leaders-list', DATA.leaders);
+  renderLeaders(); renderLeadersAdmin(); resetLeaderForm();
+  showToast('Zapisano lidera');
+}
+function editLeader(id){
+  const l = DATA.leaders.find(x=>x.id===id); if(!l) return;
+  document.getElementById('leaderEditId').value = l.id;
+  document.getElementById('leaderName').value = l.name;
+  document.getElementById('leaderRole').value = l.role;
+  document.getElementById('leaderDiscord').value = l.discord || '';
+  document.getElementById('leaderGroup').value = l.group || 'Capo';
+  document.getElementById('leaderFormTitle').textContent = 'Edytuj lidera';
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+async function deleteLeader(id){
+  DATA.leaders = DATA.leaders.filter(l=>l.id!==id);
+  await saveData('leaders-list', DATA.leaders);
+  renderLeaders(); renderLeadersAdmin();
+  showToast('Usunięto lidera');
+}
+function renderLeadersAdmin(){
+  const el = document.getElementById('leadersAdminList');
+  if(!DATA.leaders.length){ el.innerHTML = '<div class="empty-note">Brak liderów.</div>'; return; }
+  el.innerHTML = DATA.leaders.map(l=>`
+    <div class="admin-list-item">
+      <div><div class="title">${escapeHtml(l.name)}</div><div style="font-size:12px;color:var(--gray);">${LEADER_GROUP_LABELS[l.group||'Capo'][0]} · Discord: ${escapeHtml(l.discord||'—')}</div></div>
+      <div class="actions">
+        <button class="mini-btn edit" onclick="editLeader('${l.id}')">Edytuj</button>
+        <button class="mini-btn danger" onclick="deleteLeader('${l.id}')">Usuń</button>
+      </div>
+    </div>
+  `).join('');
+}
+
+/* ---- GALLERY ---- */
+async function addGalleryImg(){
+  const url = document.getElementById('galImg').value.trim();
+  const caption = document.getElementById('galCaption').value.trim();
+  if(!url){ showToast('Podaj URL zdjęcia'); return; }
+  DATA.gallery.push({ id:uid(), url, caption });
+  await saveData('gallery-list', DATA.gallery);
+  document.getElementById('galImg').value=''; document.getElementById('galCaption').value='';
+  renderGallery(); renderGalleryAdmin();
+  showToast('Dodano zdjęcie do galerii');
+}
+async function deleteGalleryImg(id){
+  DATA.gallery = DATA.gallery.filter(g=>g.id!==id);
+  await saveData('gallery-list', DATA.gallery);
+  renderGallery(); renderGalleryAdmin();
+  showToast('Usunięto zdjęcie');
+}
+function renderGalleryAdmin(){
+  const el = document.getElementById('galleryAdminList');
+  if(!DATA.gallery.length){ el.innerHTML = '<div class="empty-note">Galeria pusta.</div>'; return; }
+  el.innerHTML = DATA.gallery.map(g=>`
+    <div class="admin-list-item">
+      <div style="display:flex;align-items:center;gap:14px;">
+        <img src="${escapeAttr(g.url)}" style="width:52px;height:52px;object-fit:cover;border:1px solid var(--line);">
+        <div class="title" style="font-size:13px;">${escapeHtml(g.caption||'(bez podpisu)')}</div>
+      </div>
+      <div class="actions"><button class="mini-btn danger" onclick="deleteGalleryImg('${g.id}')">Usuń</button></div>
+    </div>
+  `).join('');
+}
+
+/* ---- ANNOUNCEMENTS ---- */
+async function saveAnnouncements(){
+  DATA.announce = document.getElementById('announceText').value;
+  await saveData('announcements', DATA.announce);
+  renderTicker();
+  showToast('Zapisano ogłoszenia');
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{ document.getElementById('loader').classList.add('hide'); }, 3000);
+});
+initData();
+</script>
+</body>
+</html>
